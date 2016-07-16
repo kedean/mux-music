@@ -3,30 +3,30 @@
 import apps.pianobar as pianobar
 import json
 from flask import Flask
+from flask import request
+from flask import abort
 
 mux = Flask(__name__)
 
 #
 # Handles all requests for now
-# In the future this will become a delegator that determines what apps have been loaded and dispatches dynamically
 #
-@mux.route("/<app>/<action>")
+@mux.route("/v1/<app>/<action>")
 def handleAll(app, action):
-    status = 200
+    response = {}
     
-    if app == "pianobar":    
-        if action == "pause":
-            pianobar.pause()
-        elif action == "resume":
-            pianobar.resume()
-        elif action == "next":
-            pianobar.next()
+    if app == "pianobar":
+        method = pianobar.actions.get(action)
+        if method is None:
+            abort(404) 
+        elif method[0] != request.method:
+            abort(405) 
         else:
-            status = 404 
+            response["status"] = 200
+            response["payload"] = method[1]()
     else:
-        status = 404
-
-    return json.dumps({"status":status, "app":app, "action":action})
+        abort(404)
+    return json.dumps(response)
 
 if __name__ == "__main__":
     mux.run(host="0.0.0.0", port=8000)
