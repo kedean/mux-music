@@ -3,7 +3,7 @@ import timeout_decorator
 import re
 
 PIANOBAR_SESSION = "pianobar"
-PIANOBAR_PIPE = "/home/pi/pianobar_pipe"
+PIANOBAR_PIPE = "/tmp/pianobar_pipe"
 
 def __init__():
     main_session_exists = subprocess.Popen(["tmux", "has-session", "-t", PIANOBAR_SESSION])
