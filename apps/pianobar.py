@@ -4,6 +4,7 @@ import re
 
 PIANOBAR_SESSION = "pianobar"
 PIANOBAR_PIPE = "/tmp/pianobar_pipe"
+PIPE_TIMEOUT = 2
 
 def __init__():
     main_session_exists = subprocess.Popen(["tmux", "has-session", "-t", PIANOBAR_SESSION])
@@ -32,7 +33,7 @@ def resume():
 def next():
     __sendKeys("n")
 
-@timeout_decorator.timeout(2, use_signals=False)
+@timeout_decorator.timeout(PIPE_TIMEOUT, use_signals=False)
 def __extractSongInfo():
     __ensurePipe()
     handle = open(PIANOBAR_PIPE, "r")
@@ -46,6 +47,9 @@ def __extractSongInfo():
     return {"song":songInfo[0], "artist":songInfo[1], "album":songInfo[2]}
 
 def songInfo():
+    """
+    Note: Unfortunately, the pipe only works ~90% of the time. To work around this, we set a timeout that only allows the piping to run for a set amount of time. If it takes too long, that means the other end of the pipe never opened, so we just try again!
+    """
     while True:
         try:
             return __extractSongInfo()
