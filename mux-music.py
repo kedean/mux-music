@@ -6,12 +6,12 @@ from flask import Flask
 from flask import request
 from flask import abort
 
-mux = Flask(__name__)
+mux = Flask(__name__, static_url_path='')
 
 #
 # Handles all requests for now
 #
-@mux.route("/v1/<app>/<action>")
+@mux.route("/v1/<app>/<action>", methods=["GET", "POST"])
 def handleAll(app, action):
     response = {}
     
