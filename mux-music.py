@@ -16,14 +16,16 @@ def handleAll(app, action):
     response = {}
     
     if app == "pianobar":
-        method = pianobar.actions.get(action)
-        if method is None:
+        function_by_method = pianobar.actions.get(action)
+        if function_by_method is None:
             abort(404) 
-        elif method[0] != request.method:
-            abort(405) 
         else:
-            response["status"] = 200
-            response["payload"] = method[1]()
+            function = function_by_method.get(request.method)
+            if function is None:
+                abort(405)
+            else:
+                response["status"] = 200
+                response["payload"] = function()
     else:
         abort(404)
     return json.dumps(response)
