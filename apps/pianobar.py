@@ -109,7 +109,6 @@ def setCurrentStation(id):
     __sendKeys("s", id, "Enter")
 
 __init__()
-print(songInfo())
 actions = {
 "next":{"POST":next}, 
 "pause":{"POST":pause},
